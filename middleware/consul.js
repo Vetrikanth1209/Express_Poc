@@ -13,7 +13,7 @@ const consul = new Consul({
 const CONSUL_SERVICE_ID = "Express_Poc";
 const CONSUL_SERVICE_NAME = "Express_Poc";
 const SERVICE_HOST = "express-poc-ix4b.onrender.com";
-const SERVICE_PORT = 7000;
+const SERVICE_PORT = 6000;
 
 // Register service in Consul with error handling
 const registerService = async () => {
@@ -24,7 +24,7 @@ const registerService = async () => {
       address: SERVICE_HOST,
       port: SERVICE_PORT,
     });
-    console.log("✅ User Service successfully registered in Consul");
+    console.log("✅ POC Service successfully registered in Consul");
   } catch (err) {
     console.error("❌ Consul registration failed:", err.message);
     // Don’t crash; retry later
@@ -44,7 +44,7 @@ const checkConsulConnection = async () => {
 
 // Initial registration and periodic check
 registerService();
-setInterval(checkConsulConnection, 300000); // Every 30 seconds
+setInterval(checkConsulConnection, 30000); // Every 30 seconds
 
 // Graceful shutdown
 process.on("SIGINT", async () => {
