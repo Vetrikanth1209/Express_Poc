@@ -1,45 +1,36 @@
 const Consul = require('consul');
+// const consul = new Consul({host: 'consul-e0hq.onrender.com', port:443, secure: true , promisify: true});
+const consul = new Consul()
+const dotenv = require('dotenv');
+dotenv.config();
 
-const consul = new Consul({
-    host: "52.90.146.225", // Hardcoded Consul host
-    port: 8500,            // Hardcoded Consul port
-    promisify: true,
-    secure: false,
-    timeout: 200000
-});
+const CONSUL_SERVICE_ID = process.env.CONSUL_SERVICE_ID;
+const CONSUL_SERVICE_NAME = process.env.CONSUL_SERVICE_NAME ;
+const CONSUL_HOST = process.env.CONSUL_HOST;
+const CONSUL_PORT = parseInt(process.env.PORT, 10);
 
-const CONSUL_SERVICE_ID = "Express_Poc";
-const CONSUL_SERVICE_NAME = "Express_Poc";
-let SERVICE_HOST = "127.0.0.1"; // Fallback value for service host
-const SERVICE_PORT = 6000;
 
-// Dynamically retrieve the host from Consul agent API
-
-    // Register the service in Consul
-    consul.agent.service.register({
-        id: CONSUL_SERVICE_ID,
-        name: CONSUL_SERVICE_NAME,
-        address: SERVICE_HOST,
-        port: SERVICE_PORT,
-    }, (err) => {
-        if (err) {
-            console.error('Error registering service:', err);
-            throw err;
-        }
-        console.log('User Service successfully registered with Consul');
-    });
-
-    
+// register expert service in consul discovery server
+consul.agent.service.register({
+    id: CONSUL_SERVICE_ID,
+    name: CONSUL_SERVICE_NAME,
+    address: CONSUL_HOST,
+    port: CONSUL_PORT,
+},
+(err)=>{
+    if(err)
+        throw err;
+    console.log('Test Service successfully registered')
+})
 // Gracefully deregister service when shutting down
 process.on('SIGINT', async () => {
     try {
-        await consul.agent.service.deregister(CONSUL_SERVICE_ID);
-        console.log('User Service deregistered from Consul');
+        await consul.agent.service.deregister(CONSUL_SERVICE_NAME);
+        console.log('Beneficiary Service deregistered from Consul');
         process.exit();
     } catch (err) {
         console.error('Error deregistering service:', err);
         process.exit(1);
     }
 });
-
 module.exports = consul;
